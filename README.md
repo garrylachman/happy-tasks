@@ -1,2 +1,14 @@
 # happy-tasks
-"Happy Tasks" is an easy Python Framework for building tasks based batch processes. A network of pipelines, triggers, dependencies, workflow management, reporting &amp; scheduling.
+
+Add a short description here!
+
+
+## Description
+
+A longer description of your project goes here...
+
+
+## Note
+
+This project has been set up using PyScaffold 3.2.1. For details and usage
+information on PyScaffold see https://pyscaffold.org/.
