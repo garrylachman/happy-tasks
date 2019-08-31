@@ -6,3 +6,6 @@ pipenv_lock:
 
 pipenv_install_local:
 	pipenv install -e .
+
+test:
+	python setup.py test
