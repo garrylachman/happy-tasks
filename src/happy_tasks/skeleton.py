@@ -18,6 +18,7 @@ Note: This skeleton file can be safely removed if not needed!
 import argparse
 import sys
 import logging
+from typing import List
 
 from happy_tasks import __version__
 
@@ -28,7 +29,7 @@ __license__ = "mit"
 _logger = logging.getLogger(__name__)
 
 
-def fib(n):
+def fib(n: int) -> int:
     """Fibonacci example function
 
     Args:
@@ -44,7 +45,7 @@ def fib(n):
     return a
 
 
-def parse_args(args):
+def parse_args(args: List[str]) -> argparse.Namespace:
     """Parse command line parameters
 
     Args:
@@ -81,7 +82,7 @@ def parse_args(args):
     return parser.parse_args(args)
 
 
-def setup_logging(loglevel):
+def setup_logging(loglevel: int) -> None:
     """Setup basic logging
 
     Args:
@@ -92,20 +93,20 @@ def setup_logging(loglevel):
                         format=logformat, datefmt="%Y-%m-%d %H:%M:%S")
 
 
-def main(args):
+def main(args: List[str]) -> None:
     """Main entry point allowing external calls
 
     Args:
       args ([str]): command line parameter list
     """
-    args = parse_args(args)
-    setup_logging(args.loglevel)
+    argsP = parse_args(args)
+    setup_logging(argsP.loglevel)
     _logger.debug("Starting crazy calculations...")
-    print("The {}-th Fibonacci number is {}".format(args.n, fib(args.n)))
+    print("The {}-th Fibonacci number is {}".format(argsP.n, fib(argsP.n)))
     _logger.info("Script ends here")
 
 
-def run():
+def run() -> None:
     """Entry point for console_scripts
     """
     main(sys.argv[1:])

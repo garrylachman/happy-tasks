@@ -8,7 +8,7 @@ __copyright__ = "Garry Lachman"
 __license__ = "mit"
 
 
-def test_fib():
+def test_fib() -> None:
     assert fib(1) == 1
     assert fib(2) == 1
     assert fib(7) == 13
