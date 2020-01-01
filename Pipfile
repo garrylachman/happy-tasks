@@ -12,6 +12,7 @@ pytest-mypy = "*"
 
 [packages]
 happy-tasks = {editable = true,path = "."}
+pyyaml = "*"
 
 [requires]
 python_version = "3.7"

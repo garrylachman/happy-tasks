@@ -1,0 +1,75 @@
+vars: #Use of YAML anchors to avoid typos
+  tasks:
+    - &logReaderTask "logReaderTask"
+    - &parseLogsTask "parseLogsTask"
+    - &reportAdministratorTask "reportAdministratorTask"
+    - &suspendUsersTask "suspendUsersTask"
+    - &sendAlertTask "sendAlertTask"
+
+name: usersUsageFlow #Flow name
+schedule: #Flow schedule (like crontab)
+  enabled: true
+  crontab: "*/15 * * * *" #Crontab format schedule
+entrypoint: *logReaderTask #Entrypoint task
+
+tasks: #Tasks list
+- name: *logReaderTask
+  task: tasks.fs.FileReader
+  config:
+    output: list
+  input_data:
+    directory: "/var/log/"
+    pattern: users_[0-9]+.log
+  triggers:
+    complete:
+      - *parseLogsTask
+    error:
+      - *reportAdministratorTask
+- name: *parseLogsTask
+  task: tasks.custom.ParseLogs
+  dependencies:
+    tasks:
+      - *logReaderTask
+  triggers:
+    complete:
+      - *suspendUsersTask
+      - *sendAlertTask
+    error:
+      - *reportAdministratorTask
+- name: *suspendUsersTask
+  task: tasks.custom.users.Suspend
+  config:
+    threshold:
+      unit: MB
+      value: 500
+  dependencies:
+    tasks:
+      - *parseLogsTask
+  triggers:
+    error:
+      - *reportAdministratorTask
+- name: *sendAlertTask
+  task: tasks.custom.users.Alert
+  config:
+    threshold:
+      unit: MB
+      value: 400
+      email: true
+  dependencies:
+    tasks:
+      - *parseLogsTask
+  triggers:
+    error:
+      - *reportAdministratorTask
+- name: *reportAdministratorTask
+  task: tasks.custom.report.Email
+  config:
+    email:
+      to:
+        - support@example.com
+        - admin@example.com
+      smtp:
+        host: smtp.example.com
+        port: 25
+        username: username1
+        password: password1
