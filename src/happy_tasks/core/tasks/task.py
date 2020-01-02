@@ -7,6 +7,7 @@ Each task has to execute the minimal as can logic and move the output data to th
 The idea behind seperating the logic to many task is the ability to catch errors, bugs & optimize performace.
 When we mix many components to one task we lose the ability to monitor the process by details.
 """
+from __future__ import annotations
 from typing import TypeVar, Generic, List, Any
 from mypy_extensions import TypedDict
 from happy_tasks.core.flows.flow import FlowDetails
@@ -26,6 +27,26 @@ class TaskStatus(Enum):
     RUNNING = 1
     COMPLETED = 2
     ERROR = 3
+    
+class TaskTriggerEvent(Enum):
+    COMPLETE = 0
+    ERROR = 1
+    
+class TaskTrigger():
+    _on: TaskTriggerEvent
+    _target: Any
+    
+    def __init__(self, on: TaskTriggerEvent, target: Any):
+        self._on = on
+        self._target = target
+        
+    @property
+    def on(self) -> TaskTriggerEvent:
+        return self._on
+      
+    @property
+    def target(self) -> Any:
+        return self._target
 
 CT = TypeVar('CT')
 
@@ -35,6 +56,8 @@ class Task(Generic[CT]):
     _config: CT
     _status: TaskStatus
     _input_data: List[Any]
+    _dependedOn: List[Task]
+    _triggers: List[TaskTrigger]
     
     """Task init
     
