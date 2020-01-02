@@ -9,10 +9,11 @@ sphinx = "*"
 pylint = "*"
 pytest = "*"
 pytest-mypy = "*"
+happy-tasks = {editable = true,path = "."}
 
 [packages]
-happy-tasks = {editable = true,path = "."}
+happy-tasks = {path = "."}
 pyyaml = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.8"
