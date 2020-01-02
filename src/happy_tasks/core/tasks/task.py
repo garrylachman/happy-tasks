@@ -29,14 +29,15 @@ class TaskStatus(Enum):
     ERROR = 3
     
 class TaskTriggerEvent(Enum):
-    COMPLETE = 0
-    ERROR = 1
+    ON_START = 0
+    ON_COMPLETE = 1
+    ON_ERROR = 2
     
 class TaskTrigger():
     _on: TaskTriggerEvent
-    _target: Any
+    _target: Task
     
-    def __init__(self, on: TaskTriggerEvent, target: Any):
+    def __init__(self, on: TaskTriggerEvent, target: Task):
         self._on = on
         self._target = target
         
@@ -45,7 +46,7 @@ class TaskTrigger():
         return self._on
       
     @property
-    def target(self) -> Any:
+    def target(self) -> Task:
         return self._target
 
 CT = TypeVar('CT')
@@ -56,7 +57,7 @@ class Task(Generic[CT]):
     _config: CT
     _status: TaskStatus
     _input_data: List[Any]
-    _dependedOn: List[Task]
+    _dependedOnTasks: List[Task]
     _triggers: List[TaskTrigger]
     
     """Task init
@@ -70,6 +71,8 @@ class Task(Generic[CT]):
         self._flowDetails = flowDetails
         self._status = TaskStatus.NOT_STARTED
         self._input_data = []
+        self._triggers = []
+        self._dependedOnTasks = []
         self.hook_init()
         
     """Name getter
@@ -155,8 +158,24 @@ class Task(Generic[CT]):
       message (str): Error message
     """
     def riseValidationException(self, message: str) -> None:
-      self._status = TaskStatus.ERROR
-      raise TaskValidationException(message)
+        self._status = TaskStatus.ERROR
+        raise TaskValidationException(message)
+    
+    def addTaskTrigger(self, on: TaskTriggerEvent, target: Task) -> TaskTrigger:
+        item = TaskTrigger(on, target)
+        self._triggers.append(item)
+        return item
+          
+    @property
+    def triggers(self) -> List[TaskTrigger]:
+        return self._triggers
+      
+    def addTaskDependency(self, target: Task) -> None:
+        self._dependedOnTasks.append(target)
+        
+    @property
+    def dependedOnTasks(self) -> List[Task]:
+        return self._dependedOnTasks
     
     """ HOOKS Section
     ----------------------------------
