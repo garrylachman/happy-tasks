@@ -14,6 +14,7 @@ from datetime import datetime
 from mypy_extensions import TypedDict
 from typing import Any, Dict, Optional
 from happy_tasks.core.flows.exceptions import FlowConfigException, FlowConfigFileNotFoundException
+from happy_tasks.core.scheduler.scheduler import Scheduler, SchedulerFlowDetails
 
 Loader: Any = None
 from yaml import load, YAMLError, YAMLObject
@@ -22,12 +23,15 @@ try:
 except ImportError:
     from yaml import Loader as Loader
 
+import copy
 
 """FlowDetailsTyping (TypedDict) checks Flow Details Typing
 """
 class FlowDetailsTyping(TypedDict):
     name: str
     timestamp: datetime
+    schedule: SchedulerFlowDetails
+
 
 """Flow Details
 """
@@ -63,7 +67,8 @@ class FlowDetails():
 """
 class Flow:
     _details: FlowDetails
-    _config: Optional[Dict[Any, Any]]
+    _config: Dict
+    _scheduler: Scheduler
     
     """Flow init
     
@@ -73,11 +78,17 @@ class Flow:
     def __init__(self, name: str, config: Dict=None):
         if len(name) < 1:
             raise FlowConfigException("Empty flow name")
+        if config is None:
+            raise FlowConfigException("Config not found")
+        
         self._config = config
+             
         self._details = FlowDetails({
             'name': name,
-            'timestamp': datetime.now()
+            'timestamp': datetime.now(),
+            'schedule': config["schedule"]
         })
+        self._scheduler = Scheduler()
         
     @property
     def details(self) -> FlowDetails:

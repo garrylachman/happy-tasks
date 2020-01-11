@@ -14,6 +14,9 @@ happy-tasks = {editable = true,path = "."}
 [packages]
 happy-tasks = {path = "."}
 pyyaml = "*"
+apscheduler = "*"
+setupext-janitor = "*"
+sqlalchemy = "*"
 
 [requires]
 python_version = "3.8"

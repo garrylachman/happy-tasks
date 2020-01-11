@@ -4,6 +4,7 @@ from __future__ import annotations
 import pytest
 from happy_tasks.core.flows.flow import FlowDetails, Flow
 from happy_tasks.core.flows.exceptions import FlowConfigException, FlowConfigFileNotFoundException
+from happy_tasks.core.scheduler.scheduler import SchedulerFlowDetails
 
 from datetime import datetime
 
@@ -17,11 +18,17 @@ class ExampleConfig(TypedDict):
 ExampleFlowDetailsNow: datetime = datetime.now()
 ExampleFlowDetails: FlowDetails = FlowDetails({
     'name': 'flow1',
-    'timestamp': ExampleFlowDetailsNow
+    'timestamp': ExampleFlowDetailsNow,
+    'schedule': SchedulerFlowDetails({
+        'enabled': True,
+        'crontab': '* * * *'
+    })
 })
 
 def test_base() -> None:
-    f:Flow = Flow("flow1")
+    f:Flow = Flow("flow1", {
+        'schedule': None
+    })
     assert f.details.name == "flow1"
     
 def test_empty_name() -> None:
@@ -33,6 +40,6 @@ def test_missing_yaml_config_file() -> None:
         Flow.initFromYAML("tests/missing_file.yaml")   
 
 def test_yaml_config_file() -> None:
-    f:Flow = Flow.initFromYAML("tests/flow1.yaml")
+    f:Flow = Flow.initFromYAML("tests/data/flow1.yaml")
     assert f.details.name == "usersUsageFlow"
     

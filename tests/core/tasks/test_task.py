@@ -4,6 +4,7 @@ import pytest
 from happy_tasks.core.tasks.task import Task, TaskStatus
 from happy_tasks.core.tasks.exceptions import TaskValidationException
 from happy_tasks.core.flows.flow import FlowDetails
+from happy_tasks.core.scheduler.scheduler import SchedulerFlowDetails
 from datetime import datetime
 
 from mypy_extensions import TypedDict
@@ -16,7 +17,11 @@ class ExampleConfig(TypedDict):
 ExampleFlowDetailsNow: datetime = datetime.now()
 ExampleFlowDetails: FlowDetails = FlowDetails({
     'name': 'flow1',
-    'timestamp': ExampleFlowDetailsNow
+    'timestamp': ExampleFlowDetailsNow,
+    'schedule': SchedulerFlowDetails({
+        'enabled': True,
+        'crontab': '* * * *'
+    })
 })
 
 def test_base() -> None:
